@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Guessing Game</title>
+    <style>
+        input {
+            border: black solid 3px;
+            height: 50px;
+            width: 50px;
+            font-size: 24px;
+            text-align: center;
+            margin: 5px;
+        }
+        .correct {
+            background-color: green;
+            color: white;
+        }
+        .partial {
+            background-color: yellow;
+        }
+        .wrong {
+            background-color: white;
+        }
+        .guess-row {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Word Guessing Game</h1>
+<div id="guess-container"></div>
+<button id="submit-button" onclick="checkGuess()">Submit</button>
+<p id="message"></p>
+
+<script>
+    const words = ["apple", "grape", "lemon", "peach", "berry"];
+    const selectedWord = words[Math.floor(Math.random() * words.length)];
+    const guessContainer = document.getElementById('guess-container');
+    const message = document.getElementById('message');
+    let attempts = 0;
+    const maxAttempts = 6;
+
+    function createInputRow() {
+        const row = document.createElement('div');
+        row.classList.add('guess-row');
+        row.setAttribute('id', `row-${attempts}`);
+
+        for (let i = 0; i < selectedWord.length; i++) {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('maxlength', '1');
+            input.setAttribute('id', `input-${attempts}-${i}`);
+            input.classList.add('wrong');
+            row.appendChild(input);
+        }
+
+        guessContainer.appendChild(row);
+    }
+
+    function checkGuess() {
+        if (attempts >= maxAttempts) {
+            message.textContent = `Game Over! The correct word was "${selectedWord}".`;
+            return;
+        }
+
+        const currentRow = document.getElementById(`row-${attempts}`);
+        let correctCount = 0;
+
+        for (let i = 0; i < selectedWord.length; i++) {
+            const input = document.getElementById(`input-${attempts}-${i}`);
+            const guessedLetter = input.value.toLowerCase();
+
+            if (guessedLetter === selectedWord[i]) {
+                input.classList.add('correct');
+                input.classList.remove('partial', 'wrong');
+                correctCount++;
+            } else if (selectedWord.includes(guessedLetter)) {
+                input.classList.add('partial');
+                input.classList.remove('correct', 'wrong');
+            } else {
+                input.classList.remove('correct', 'partial');
+                input.classList.add('wrong');
+            }
+        }
+
+        if (correctCount === selectedWord.length) {
+            message.textContent = "Congratulations! You guessed the word!";
+            document.getElementById('submit-button').disabled = true;
+        } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+                createInputRow();
+            } else {
+                message.textContent = `Game Over! The correct word was "${selectedWord}".`;
+            }
+        }
+    }
+
+ 
+    createInputRow();
+</script>
+</body>
+</html>
