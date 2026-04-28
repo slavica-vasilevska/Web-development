@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        h1{
+            text-align: center;
+        }
+        .Batch{
+            display: flex;
+            justify-content: center;
+        }
+        .card{
+            width:100px;
+            height:100px;
+            margin-top: 20px;
+            margin-right: 20px;
+            border: 1px solid black;
+            border-radius: 5px;
+            font-size: 30px;
+            text-align: center;
+        }
+        button{
+            width:200px;
+            height: 30px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .buttonSafe{
+            margin-left: 550px;
+            margin-right: 20px;
+        }
+    </style>
+
+</head>
+<body>
+<h1>Memory game</h1>
+<div class="Batch">
+    <div class="card bomb">
+        <span>*</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+</div>
+
+
+<div class="Batch">
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card bomb">
+        <span>*</span>
+    </div>
+    <div class="card bomb">
+        <span>*</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+</div>
+
+
+<div class="Batch">
+    <div class="card bomb">
+        <span>*</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card bomb">
+        <span>*</span>
+    </div>
+</div>
+
+
+<div class="Batch">
+    <div class="card bomb">
+        <span>*</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+    <div class="card safe">
+        <span>///</span>
+    </div>
+</div>
+
+<button class="buttonSafe">Label safe</button>
+<button class="buttonBomb">Label bomb</button>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"> </script>
+<script>
+    $(document).ready(function (){
+        function hideText(){
+            $(".card").find("span").hide();
+        }
+        setTimeout(hideText,5000);
+    })
+
+    let label="safe";
+    let counter=0;
+    $(".buttonSafe").click(function (){
+        $(this).css("background-color","orange");
+        $(".buttonBomb").css("background-color","white");
+        label="safe";
+    })
+
+    $(".buttonBomb").click(function (){
+        $(this).css("background-color","orange");
+        $(".buttonSafe").css("background-color","white");
+        label="bomb";
+    })
+
+    $(".card").click(function (){
+        if(label==="safe")
+        {
+            if($(this).hasClass("bomb"))
+            {
+                $(this).find("span").show();
+                alert("You lose");
+                $(this).css("background-color","black")
+                $(this).css("color","white")
+            }
+            else
+            {
+                $(this).find("span").show();
+                counter++;
+                $(this).css("background-color","lightyellow")
+            }
+        }
+
+        if(label==="bomb")
+        {
+            if($(this).hasClass("safe"))
+            {
+                $(this).find("span").show();
+                alert("You lose");
+                $(this).css("background-color","black")
+                $(this).css("color","white")
+            }
+            else
+            {
+                $(this).find("span").show();
+                counter++;
+                $(this).css("background-color","lightyellow")
+            }
+        }
+    })
+
+
+
+
+</script>
+</body>
+</html>
