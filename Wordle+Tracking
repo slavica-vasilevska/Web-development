@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game with Plotly and Anime.js</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #guess { margin-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(5, 50px); gap: 5px; }
+        .tile { width: 50px; height: 50px; text-align: center; line-height: 50px; border: 1px solid #ccc; }
+        .correct { background-color: green; }
+        .present { background-color: yellow; }
+        .absent { background-color: gray; }
+    </style>
+</head>
+<body>
+<h1>Wordle Game</h1>
+<div id="game-board" class="grid"></div>
+<input type="text" id="guess" maxlength="5" placeholder="Enter your guess">
+<button id="submit-guess">Submit Guess</button>
+<h3>Performance</h3>
+<div id="plotly-chart"></div>
+
+<script>
+    const targetWord = "apple"; 
+    let attempts = [];
+    let currentAttempt = 0;
+
+   
+    const gameBoard = document.getElementById("game-board");
+    for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 5; col++) {
+            const tile = document.createElement("div");
+            tile.classList.add("tile");
+            gameBoard.appendChild(tile);
+        }
+    }
+    
+    document.getElementById("submit-guess").addEventListener("click", () => {
+        const guess = document.getElementById("guess").value.toLowerCase();
+        if (guess.length === 5) {
+            evaluateGuess(guess);
+            document.getElementById("guess").value = ""; // Reset input
+        }
+    });
+
+    function evaluateGuess(guess) {
+        const feedback = [];
+        for (let i = 0; i < 5; i++) {
+            if (guess[i] === targetWord[i]) {
+                feedback.push("correct");
+            } else if (targetWord.includes(guess[i])) {
+                feedback.push("present");
+            } else {
+                feedback.push("absent");
+            }
+        }
+
+      
+        const tiles = document.querySelectorAll(".tile");
+        for (let i = 0; i < 5; i++) {
+            const tile = tiles[currentAttempt * 5 + i];
+            tile.textContent = guess[i];
+            tile.classList.add(feedback[i]);
+
+         
+            anime({
+                targets: tile,
+                scale: [0, 1], 
+                duration: 500,
+                easing: 'easeOutElastic',
+                opacity: [0, 1], 
+                delay: i * 100 
+            });
+        }
+
+       
+        attempts.push(feedback.filter(status => status === "correct").length);
+        currentAttempt++;
+
+        if (feedback.every(status => status === "correct")) {
+            alert("Congratulations! You've guessed the word!");
+        } else if (currentAttempt === 6) {
+            alert("Game over! The word was: " + targetWord);
+        }
+        
+        updatePlotlyChart();
+    }
+
+
+    function updatePlotlyChart() {
+        const xValues = Array.from({ length: currentAttempt }, (_, i) => i + 1);
+        const yValues = attempts;
+
+        const data = [{
+            x: xValues,
+            y: yValues,
+            type: 'scatter',
+            mode: 'lines+markers',
+            marker: { color: 'green' }
+        }];
+
+        const layout = {
+            title: 'Performance Over Time',
+            xaxis: { title: 'Attempt' },
+            yaxis: { title: 'Correct Guesses' }
+        };
+
+        Plotly.newPlot('plotly-chart', data, layout);
+    }
+</script>
+</body>
+</html>
